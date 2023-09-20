@@ -88,7 +88,7 @@ describe("HomeComponent", () => {
     expect(tabs.length).toBe(1, "Unexpected number of tabs found");
   });
 
-  it("should display both tabs", () => {
+  it("should display both tabs", (done: DoneFn) => {
     coursesService.findAllCourses.and.returnValue(of(setupCourses()));
 
     fixture.detectChanges();
@@ -105,7 +105,11 @@ describe("HomeComponent", () => {
 
     const tabs = debugElemen.queryAll(By.css(".mat-mdc-tab"));
 
+    // aqui temos ocorre o problema pois internamente o componente de tabs chama uma função de animação assinc,
+    // e o teste termina de executar antes de a aba ser trocada.
     click(tabs[1]);
+
+    fixture.detectChanges();
 
     const carTitles = debugElemen.queryAll(By.css(".mat-mdc-card-title"));
 
