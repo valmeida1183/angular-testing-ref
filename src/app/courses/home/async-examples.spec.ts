@@ -1,4 +1,6 @@
 import { fakeAsync, flush, flushMicrotasks, tick } from "@angular/core/testing";
+import { of } from "rxjs";
+import { delay } from "rxjs/operators";
 
 describe("Async Testing Examples for native asynchronous calls, like setTimeout, http requests using fetch api...", () => {
   // Essa abordagem deve ser evitada, pois utilizar o setTimeout para simular funcionalidades async
@@ -55,7 +57,7 @@ describe("Async Testing Examples for native asynchronous calls, like setTimeout,
 
 // Este exemplo mostra que promisses são microtasks ao contrário de tasks (setTimout, setInterval http requests, mouse event clicks, etc...)
 // e tem uma fila de execução separada no browser, como resultado disso nos logs elas sempre executam primeiro
-fdescribe("Async Testing Examples for Promises", () => {
+describe("Async Testing Examples for Promises", () => {
   it("Async test example - plain Promise (promise is a microtask)", fakeAsync(() => {
     let test = false;
 
@@ -114,5 +116,26 @@ fdescribe("Async Testing Examples for Promises", () => {
     tick(500);
 
     expect(counter).toBe(11);
+  }));
+});
+
+// Este exemplo mostra os testes com Observables
+describe("Async Testing Examples for Observables", () => {
+  it("Async test example - plain Observavle", fakeAsync(() => {
+    let test = false;
+
+    console.log("Creating Observable");
+
+    const test$ = of(test).pipe(delay(1000)); // sem deo delay o observable se torna síncrono e é resolvido imediatamente neste cenário de criação com "of"
+
+    test$.subscribe(() => {
+      test = true;
+    });
+
+    tick(1000);
+
+    console.log("Running test assertions");
+
+    expect(test).toBe(true);
   }));
 });
